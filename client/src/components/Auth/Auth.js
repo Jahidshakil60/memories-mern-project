@@ -1,23 +1,44 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, Button, Paper, Grid, Typography, Container, TextField } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import { useDispatch } from "react-redux";
 
 import useStyles from "./styles";
 import Input from "./Input";
+import { signIn, signUp } from "../../actions/auth";
+
+const initialState = { firstName: "", lastName: "", email: "", password: "", confirmPassword: "" };
 
 function Auth() {
 	const classes = useStyles();
 
 	const [showPassword, setShowPassword] = useState(false);
 	const [isSignup, setIsSignup] = useState(false);
+	const [formData, setFormData] = useState(initialState);
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	const handleShowPassword = () => setShowPassword(!showPassword);
 
-	const handleSubmit = () => {};
-	const handleChange = () => {};
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		console.log(formData);
+
+		if (isSignup) {
+			dispatch(signUp(formData, navigate));
+		} else {
+			dispatch(signIn(formData, navigate));
+		}
+	};
+
+	const handleChange = (e) => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
+
 	const switchMode = () => {
 		setIsSignup(!isSignup);
-		handleShowPassword(false);
+		setShowPassword(false);
 	};
 
 	return (
@@ -32,7 +53,7 @@ function Auth() {
 						{isSignup && (
 							<>
 								<Input name="firstName" label="First Name" handleChange={handleChange} autoFocus half />
-								<Input name="firstName" label="First Name" handleChange={handleChange} autoFocus half />
+								<Input name="lastName" label="Last Name" handleChange={handleChange} autoFocus half />
 							</>
 						)}
 						<Input name="email" label="Email Address" handleChange={handleChange} type="email" />
